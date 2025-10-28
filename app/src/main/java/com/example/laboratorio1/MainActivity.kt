@@ -28,6 +28,16 @@ import com.example.laboratorio1.util.PreferencesManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import androidx.compose.foundation.Image
+import androidx.compose.ui.res.painterResource
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.ui.graphics.Color
+import androidx.compose.foundation.layout.Box
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.layout.ContentScale
+
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -155,8 +165,7 @@ fun AppNavigator(
 fun LoginForm(
     navController: NavController,
     preferencesManager: PreferencesManager,
-    userRepository: UserRepository,
-    modifier: Modifier = Modifier
+    userRepository: UserRepository,modifier: Modifier = Modifier
 ) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -164,119 +173,161 @@ fun LoginForm(
     var passwordError by remember { mutableStateOf("") }
     var loginError by remember { mutableStateOf(false) }
 
-    // Validación de email
     val isEmailValid = email.isNotEmpty() && Patterns.EMAIL_ADDRESS.matcher(email).matches()
-    // Validación de contraseña
     val isPasswordValid = password.length >= 6
 
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
+    // 1. Contenedor principal Box para apilar elementos
+    Box(
+        modifier = modifier.fillMaxSize()
     ) {
-        // --- Campo de texto para Email ---
-        TextField(
-            value = email,
-            onValueChange = {
-                email = it
-                emailError = if (it.isNotEmpty() && !Patterns.EMAIL_ADDRESS.matcher(it).matches()) {
-                    "Correo ingresado inválido"
-                } else {
-                    ""
-                }
-                loginError = false
-            },
-            label = { Text("Email") },
-            isError = emailError.isNotEmpty() || loginError,
-            modifier = Modifier.fillMaxWidth(),
-            singleLine = true,
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email)
+        // 2. Imagen de fondo
+        Image(
+            // --- USA EL NOMBRE DE TU IMAGEN AQUÍ ---
+            painter = painterResource(id = R.drawable.fondo),
+            contentDescription = null, // Es decorativa, no necesita descripción
+            modifier = Modifier.fillMaxSize(),
+            // Escala la imagen para que llene la pantalla, recortando si es necesario
+            contentScale = ContentScale.Crop
         )
 
-        if (emailError.isNotEmpty()) {
-            Text(
-                text = emailError,
-                color = MaterialTheme.colorScheme.error,
-                style = MaterialTheme.typography.bodySmall,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 16.dp, top = 4.dp)
+        // 3. Columna con el contenido del formulario
+        // (Esta es la columna que ya tenías, ahora dentro del Box)
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.logo2),
+                contentDescription = "Logo de la App",
+                modifier = Modifier.size(120.dp)
             )
-        }
+            Spacer(modifier = Modifier.height(16.dp))
 
-        Spacer(modifier = Modifier.height(8.dp))
-
-        // --- Campo de texto para Contraseña ---
-        TextField(
-            value = password,
-            onValueChange = {
-                password = it
-                passwordError = if (it.isNotEmpty() && it.length < 6) {
-                    "La contraseña ingresada debe tener al menos 6 caracteres"
-                } else {
-                    ""
-                }
-                loginError = false
-            },
-            label = { Text("Contraseña") },
-            isError = passwordError.isNotEmpty() || loginError,
-            modifier = Modifier.fillMaxWidth(),
-            singleLine = true,
-            visualTransformation = PasswordVisualTransformation(),
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
-        )
-
-        if (passwordError.isNotEmpty()) {
-            Text(
-                text = passwordError,
-                color = MaterialTheme.colorScheme.error,
-                style = MaterialTheme.typography.bodySmall,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 16.dp, top = 4.dp)
+            // --- Campo de texto para Email ---
+            OutlinedTextField(
+                value = email,
+                onValueChange = {
+                    email = it
+                    emailError = if (it.isNotEmpty() && !Patterns.EMAIL_ADDRESS.matcher(it).matches()) {
+                        "Correo ingresado inválido"
+                    } else { "" }
+                    loginError = false
+                },
+                label = { Text("Email") },
+                isError = emailError.isNotEmpty() || loginError,
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true,
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+                shape = RoundedCornerShape(29.dp),
+                colors = TextFieldDefaults.colors(
+                    focusedIndicatorColor = Color(0xFF39FF14),
+                    unfocusedIndicatorColor = Color.White,
+                    focusedContainerColor = Color.White,
+                    unfocusedContainerColor = Color.White
+                )
             )
-        }
 
-        Spacer(modifier = Modifier.height(16.dp))
+            if (emailError.isNotEmpty()) {
+                Text(
+                    text = emailError,
+                    color = MaterialTheme.colorScheme.error,
+                    style = MaterialTheme.typography.bodySmall,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(start = 16.dp, top = 4.dp)
+                )
+            }
 
-        // --- Mensaje de error general ---
-        if (loginError) {
-            Text(
-                text = "Usuario o contraseña incorrecta",
-                color = MaterialTheme.colorScheme.error,
-                modifier = Modifier.padding(bottom = 8.dp)
+            Spacer(modifier = Modifier.height(8.dp))
+
+            // --- Campo de texto para Contraseña ---
+            OutlinedTextField(
+                value = password,
+                onValueChange = {
+                    password = it
+                    passwordError = if (it.isNotEmpty() && it.length < 6) {
+                        "La contraseña debe tener al menos 6 caracteres"
+                    } else { "" }
+                    loginError = false
+                },
+                label = { Text("Contraseña") },
+                isError = passwordError.isNotEmpty() || loginError,
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true,
+                visualTransformation = PasswordVisualTransformation(),
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                shape = RoundedCornerShape(29.dp),
+                colors = TextFieldDefaults.colors(
+                    focusedIndicatorColor = Color(0xFF39FF14),
+                    unfocusedIndicatorColor = Color.White,
+                    focusedContainerColor = Color.White,
+                    unfocusedContainerColor = Color.White
+                )
             )
-        }
 
-        // --- Botón de Login ---
-        Button(
-            onClick = {
-                CoroutineScope(Dispatchers.IO).launch {
-                    val user = userRepository.login(email, password)
+            if (passwordError.isNotEmpty()) {
+                Text(
+                    text = passwordError,
+                    color = MaterialTheme.colorScheme.error,
+                    style = MaterialTheme.typography.bodySmall,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(start = 16.dp, top = 4.dp)
+                )
+            }
 
-                    if (user != null) {
-                        preferencesManager.saveLoginState(true)
-                        preferencesManager.saveUserName(user.nombre, user.apellido)
-                        preferencesManager.saveAdminStatus(user.isAdmin)
+            Spacer(modifier = Modifier.height(16.dp))
 
-                        launch(Dispatchers.Main) {
-                            navController.navigate("home/${user.nombre}/${user.apellido}") {
-                                popUpTo("login") { inclusive = true }
+            // --- Mensaje de error general ---
+            if (loginError) {
+                Text(
+                    text = "Usuario o contraseña incorrecta",
+                    color = MaterialTheme.colorScheme.error,
+                    modifier = Modifier.padding(bottom = 8.dp)
+                )
+            }
+
+            // --- Botón de Login ---
+            // --- Botón de Login ---
+            Button(
+                onClick = {
+                    CoroutineScope(Dispatchers.IO).launch {
+                        val user = userRepository.login(email, password)
+                        if (user != null) {
+                            preferencesManager.saveLoginState(true)
+                            preferencesManager.saveUserName(user.nombre, user.apellido)
+                            preferencesManager.saveAdminStatus(user.isAdmin)
+                            launch(Dispatchers.Main) {
+                                navController.navigate("home/${user.nombre}/${user.apellido}") {
+                                    popUpTo("login") { inclusive = true }
+                                }
+                            }
+                        } else {
+                            launch(Dispatchers.Main) {
+                                loginError = true
                             }
                         }
-                    } else {
-                        launch(Dispatchers.Main) {
-                            loginError = true
-                        }
                     }
-                }
-            },
-            modifier = Modifier.fillMaxWidth(),
-            enabled = isEmailValid && isPasswordValid && email.isNotEmpty() && password.isNotEmpty()
-        ) {
-            Text("Iniciar Sesión")
+                },
+                modifier = Modifier.fillMaxWidth(),
+                enabled = isEmailValid && isPasswordValid && email.isNotEmpty() && password.isNotEmpty(),
+                // --- AÑADE ESTO PARA LOS COLORES DEL BOTÓN ---
+                colors = ButtonDefaults.buttonColors(
+                    // Color de fondo cuando el botón está HABILITADO
+                    containerColor = Color(0xFFA8FD3E),
+                    // Color de fondo cuando el botón está DESHABILITADO
+                    disabledContainerColor = Color(0xFF00C4FE),
+                    // Color del texto para ambos estados para asegurar la visibilidad
+                    contentColor = Color.Black,
+                    disabledContentColor = Color.Black
+                )
+                // ---------------------------------------------
+            ) {
+                Text("Iniciar Sesión")
+            }
         }
     }
 }
