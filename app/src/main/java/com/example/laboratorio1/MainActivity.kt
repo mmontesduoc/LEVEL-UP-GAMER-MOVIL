@@ -24,6 +24,10 @@ import androidx.navigation.navArgument
 import com.example.laboratorio1.ui.theme.Laboratorio1Theme
 import androidx.compose.foundation.Image
 import androidx.compose.ui.res.painterResource
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.ui.graphics.Color
+
 
 data class User(
     val nombre: String,
@@ -96,37 +100,83 @@ fun LoginForm(navController: NavController, modifier: Modifier = Modifier) {
     )
         Spacer(modifier = Modifier.height(16.dp))
         // --- Campo de texto para Email ---
-        TextField(
+        OutlinedTextField(
             value = email,
             onValueChange = {
                 email = it
-                emailError = false // Reinicia el error al escribir
+                emailError = if (it.isNotEmpty() && !Patterns.EMAIL_ADDRESS.matcher(it).matches()) {
+                    "Correo ingresado inválido"
+                } else {
+                    ""
+                }
                 loginError = false
             },
             label = { Text("Email") },
-            isError = emailError || loginError,
+            isError = emailError.isNotEmpty() || loginError,
             modifier = Modifier.fillMaxWidth(),
             singleLine = true,
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email)
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+            shape = RoundedCornerShape(29.dp), // <--- BORDE REDONDEADO
+            colors = TextFieldDefaults.colors(
+                focusedIndicatorColor = Color(0xFF39FF14),    // Color del borde cuando está seleccionado
+                unfocusedIndicatorColor = Color.Gray,          // Color del borde cuando no está seleccionado
+                focusedContainerColor = Color.Transparent,     // Fondo transparente
+                unfocusedContainerColor = Color.Transparent    // Fondo transparente
+            )
+
         )
+
+        if (emailError.isNotEmpty()) {
+            Text(
+                text = emailError,
+                color = MaterialTheme.colorScheme.error,
+                style = MaterialTheme.typography.bodySmall,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 16.dp, top = 4.dp)
+            )
+        }
 
         Spacer(modifier = Modifier.height(8.dp))
 
         // --- Campo de texto para Contraseña ---
-        TextField(
+        OutlinedTextField(
             value = password,
             onValueChange = {
                 password = it
-                passwordError = false // Reinicia el error al escribir
+                passwordError = if (it.isNotEmpty() && it.length < 6) {
+                    "La contraseña ingresada debe tener al menos 6 caracteres"
+                } else {
+                    ""
+                }
                 loginError = false
             },
             label = { Text("Contraseña") },
-            isError = passwordError || loginError,
+            isError = passwordError.isNotEmpty() || loginError,
             modifier = Modifier.fillMaxWidth(),
             singleLine = true,
             visualTransformation = PasswordVisualTransformation(),
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+            shape = RoundedCornerShape(29.dp), // <--- BORDE REDONDEADO
+            colors = TextFieldDefaults.colors(
+                focusedIndicatorColor = Color(0xFF39FF14),    // Color del borde cuando está seleccionado
+                unfocusedIndicatorColor = Color.Gray,          // Color del borde cuando no está seleccionado
+                focusedContainerColor = Color.Transparent,     // Fondo transparente
+                unfocusedContainerColor = Color.Transparent    // Fondo transparente
+            )
+
         )
+
+        if (passwordError.isNotEmpty()) {
+            Text(
+                text = passwordError,
+                color = MaterialTheme.colorScheme.error,
+                style = MaterialTheme.typography.bodySmall,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 16.dp, top = 4.dp)
+            )
+        }
 
         Spacer(modifier = Modifier.height(16.dp))
 
