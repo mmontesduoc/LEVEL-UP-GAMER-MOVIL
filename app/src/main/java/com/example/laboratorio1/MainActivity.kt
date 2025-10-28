@@ -22,6 +22,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.laboratorio1.ui.theme.Laboratorio1Theme
+import androidx.compose.foundation.Image
+import androidx.compose.ui.res.painterResource
 
 data class User(
     val nombre: String,
@@ -87,7 +89,12 @@ fun LoginForm(navController: NavController, modifier: Modifier = Modifier) {
             .padding(16.dp),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
-    ) {
+    ) { Image(
+        painter = painterResource(id = R.drawable.logo2), // Reemplaza esto con tu logo
+        contentDescription = "Logo de la App",
+        modifier = Modifier.size(120.dp)
+    )
+        Spacer(modifier = Modifier.height(16.dp))
         // --- Campo de texto para Email ---
         TextField(
             value = email,
