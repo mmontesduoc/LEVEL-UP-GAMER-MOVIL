@@ -9,6 +9,8 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.laboratorio1.util.PreferencesManager
 import kotlinx.coroutines.launch
+import androidx.compose.foundation.Image
+import androidx.compose.ui.res.painterResource
 
 @Composable
 fun homeScreen(
@@ -24,6 +26,15 @@ fun homeScreen(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
+        Image(
+            // Asegúrate de que 'R.drawable.logo2' es el nombre correcto de tu logo
+            painter = painterResource(id = R.drawable.logo2),
+            contentDescription = "Logo de la App",
+            modifier = Modifier
+                .align(Alignment.TopStart) // Lo alinea arriba a la izquierda
+                .padding(40.dp)           // Le da un poco de espacio
+                .size(80.dp)              // Ajusta el tamaño como prefieras
+        )
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center,
