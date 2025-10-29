@@ -18,6 +18,9 @@ import androidx.navigation.NavController
 import com.example.laboratorio1.data.UserEntity
 import com.example.laboratorio1.viewModel.OperationState
 import com.example.laboratorio1.viewModel.UserViewModel
+import androidx.compose.foundation.Image
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -76,7 +79,14 @@ fun UserListScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
-        ) {
+        ) { 
+            Image(
+                // Asegúrate de tener una imagen llamada 'fondo2' en res/drawable
+                painter = painterResource(id = R.drawable.fondo2),
+                contentDescription = null, // Es decorativa
+                modifier = Modifier.fillMaxSize(),
+                contentScale = ContentScale.Crop // Para que llene el espacio
+            )
             if (users.isEmpty()) {
                 // Mensaje cuando no hay usuarios
                 Column(
