@@ -30,7 +30,7 @@ fun homeScreen(
             modifier = Modifier.padding(16.dp)
         ) {
             Text(
-                text = "¡Bienvenido, $nombre $apellido!",
+                text = "Bienvenido, $nombre $apellido!",
                 style = MaterialTheme.typography.headlineMedium,
                 modifier = Modifier.padding(bottom = 8.dp)
             )
@@ -54,7 +54,7 @@ fun homeScreen(
                 Spacer(modifier = Modifier.height(24.dp))
             }
 
-            // Botón Gestionar Usuarios (solo para admins)
+            // Botï¿½n Gestionar Usuarios (solo para admins)
             if (isAdmin) {
                 Button(
                     onClick = {
@@ -80,7 +80,7 @@ fun homeScreen(
                 },
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text("Cerrar sesión")
+                Text("Cerrar sesion")
             }
         }
     }
