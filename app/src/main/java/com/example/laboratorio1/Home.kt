@@ -11,6 +11,9 @@ import com.example.laboratorio1.util.PreferencesManager
 import kotlinx.coroutines.launch
 import androidx.compose.foundation.Image
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.graphics.Color
+import androidx.compose.foundation.BorderStroke
 
 @Composable
 fun homeScreen(
@@ -27,13 +30,21 @@ fun homeScreen(
         contentAlignment = Alignment.Center
     ) {
         Image(
+            // --- Usa el nombre de tu imagen de fondo aquí ---
+            painter = painterResource(id = R.drawable.fondo2),
+            contentDescription = null, // Imagen decorativa
+            modifier = Modifier.fillMaxSize(),
+            // Escala la imagen para que llene la pantalla sin deformarse
+            contentScale = ContentScale.Crop
+        )
+        Image(
             // Asegúrate de que 'R.drawable.logo2' es el nombre correcto de tu logo
             painter = painterResource(id = R.drawable.logo2),
             contentDescription = "Logo de la App",
             modifier = Modifier
                 .align(Alignment.TopStart) // Lo alinea arriba a la izquierda
-                .padding(40.dp)           // Le da un poco de espacio
-                .size(80.dp)              // Ajusta el tamaño como prefieras
+                .padding(20.dp)           // Le da un poco de espacio
+                .size(100.dp)              // Ajusta el tamaño como prefieras
         )
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -65,13 +76,22 @@ fun homeScreen(
                 Spacer(modifier = Modifier.height(24.dp))
             }
 
-            // Bot�n Gestionar Usuarios (solo para admins)
+            // Boton Gestionar Usuarios (solo para admin)
             if (isAdmin) {
                 Button(
                     onClick = {
                         navController.navigate("userList")
                     },
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
+                    // --- AÑADE ESTO PARA CAMBIAR EL COLOR ---
+                    border = BorderStroke(1.dp, Color(0xFF00C4FE)),
+                    colors = ButtonDefaults.buttonColors(
+                        // Aquí puedes poner el color que quieras para el fondo
+                        containerColor = Color(0xFFA8FD3E),
+                                contentColor = Color.Black,
+                        disabledContentColor = Color.Black
+                    )
+                    // ------------------------------------------
                 ) {
                     Text("Gestionar Usuarios")
                 }
@@ -89,7 +109,15 @@ fun homeScreen(
                         popUpTo("home/${nombre}/${apellido}") { inclusive = true }
                     }
                 },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                border = BorderStroke(1.dp, Color(0xFF00C4FE)),
+                colors = ButtonDefaults.buttonColors(
+                    // Aquí puedes poner el color que quieras para el fondo
+                    containerColor = Color(0xFFA8FD3E),
+                    contentColor = Color.Black,
+                    disabledContentColor = Color.Black
+                )
+
             ) {
                 Text("Cerrar sesion")
             }
