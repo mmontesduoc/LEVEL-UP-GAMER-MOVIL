@@ -1,77 +1,59 @@
 package com.example.laboratorio1.util
 
 import android.content.Context
-import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.core.booleanPreferencesKey
-import androidx.datastore.preferences.core.edit
-import androidx.datastore.preferences.core.stringPreferencesKey
-import androidx.datastore.preferences.preferencesDataStore
+import android.content.SharedPreferences
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 
-private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "user_preferences")
+class PreferencesManager(context: Context) {
 
-class PreferencesManager(private val context: Context) {
-    companion object {
-        private val IS_LOGGED_IN = booleanPreferencesKey("is_logged_in")
-        private val USER_NAME = stringPreferencesKey("user_name")
-        private val USER_LASTNAME = stringPreferencesKey("user_lastname")
-        private val IS_ADMIN = booleanPreferencesKey("is_admin")
-        private val DB_INITIALIZED = booleanPreferencesKey("db_initialized")
+    private val prefs: SharedPreferences =
+        context.getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
+
+    private val _isLoggedInFlow = MutableStateFlow(isLoggedIn())
+    val isLoggedInFlow: Flow<Boolean> = _isLoggedInFlow.asStateFlow()
+
+    private val _isAdminFlow = MutableStateFlow(isAdmin())
+    val isAdminFlow: Flow<Boolean> = _isAdminFlow.asStateFlow()
+
+    private val _getUserNameFlow = MutableStateFlow(getUserName())
+    val getUserNameFlow: Flow<Pair<String, String>> = _getUserNameFlow.asStateFlow()
+
+    fun saveLoginState(loggedIn: Boolean) {
+        prefs.edit().putBoolean("isLoggedIn", loggedIn).apply()
+        _isLoggedInFlow.value = loggedIn
     }
 
-    suspend fun saveLoginState(isLoggedIn: Boolean) {
-        context.dataStore.edit { prefs ->
-            prefs[IS_LOGGED_IN] = isLoggedIn
-        }
+    fun saveAdminStatus(admin: Boolean) {
+        prefs.edit().putBoolean("isAdmin", admin).apply()
+        _isAdminFlow.value = admin
     }
 
-    suspend fun saveUserName(nombre: String, apellido: String) {
-        context.dataStore.edit { prefs ->
-            prefs[USER_NAME] = nombre
-            prefs[USER_LASTNAME] = apellido
-        }
+    fun saveUserName(nombre: String, apellido: String) {
+        prefs.edit().putString("nombre", nombre).putString("apellido", apellido).apply()
+        _getUserNameFlow.value = nombre to apellido
     }
 
-    suspend fun saveAdminStatus(isAdmin: Boolean) {
-        context.dataStore.edit { prefs ->
-            prefs[IS_ADMIN] = isAdmin
-        }
+    fun setLoggedIn(value: Boolean) {
+        saveLoginState(value)
     }
 
-    suspend fun setLoggedIn(isLoggedIn: Boolean) {
-        context.dataStore.edit { prefs ->
-            prefs[IS_LOGGED_IN] = isLoggedIn
-        }
-    }
+    fun isLoggedIn(): Boolean = prefs.getBoolean("isLoggedIn", false)
 
-    val isLoggedInFlow: Flow<Boolean> = context.dataStore.data
-        .map { prefs ->
-            prefs[IS_LOGGED_IN] ?: false
-        }
+    fun isAdmin(): Boolean = prefs.getBoolean("isAdmin", false)
 
-    val getUserNameFlow: Flow<Pair<String, String>> = context.dataStore.data
-        .map { prefs ->
-            val nombre = prefs[USER_NAME] ?: ""
-            val apellido = prefs[USER_LASTNAME] ?: ""
-            Pair(nombre, apellido)
-        }
+    fun getUserName(): Pair<String, String> =
+        (prefs.getString("nombre", "") ?: "") to (prefs.getString("apellido", "") ?: "")
 
-    val isAdminFlow: Flow<Boolean> = context.dataStore.data
-        .map { prefs ->
-            prefs[IS_ADMIN] ?: false
-        }
+    // --- AGREGADO: Función para borrar todos los datos (Cerrar sesión) ---
+    fun clearData() {
+        // 1. Borrar todo del almacenamiento físico
+        prefs.edit().clear().apply()
 
-    suspend fun markDatabaseAsInitialized() {
-        context.dataStore.edit { prefs ->
-            prefs[DB_INITIALIZED] = true
-        }
-    }
-
-    suspend fun isDatabaseInitialized(): Boolean {
-        val prefs = context.dataStore.data.map { it[DB_INITIALIZED] ?: false }
-        return prefs.first()
+        // 2. Resetear los flujos en memoria para que la UI se entere inmediatamente
+        _isLoggedInFlow.value = false
+        _isAdminFlow.value = false
+        _getUserNameFlow.value = "" to ""
     }
 }
